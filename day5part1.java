@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class d5p1 {
+public class day5part2 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String nextLine;
@@ -23,16 +23,19 @@ public class d5p1 {
         LinkedList<Character> stack8 = new LinkedList<>();
         stacks[7] = stack8;
         LinkedList<Character> stack9 = new LinkedList<>();
-        stacks[8] = stack8;
+        stacks[8] = stack9;
         for (int level = 0; level < 8; level++){
             nextLine = scanner.nextLine();
-            for (int n = 0; n < 8; n++) {
+            for (int n = 0; n < 9; n++) {
                 int barrelIndex = (4 * n) + 1;
                 if (!(nextLine.charAt(barrelIndex) == ' ')) {
                     Character barrel = nextLine.charAt(barrelIndex);
-                    stacks[n].add(barrel);
+                    stacks[n].addLast(barrel);
                 }
             }
+        }
+        for (int test = 0; test < 9; test++) {
+            System.out.println(stacks[test]);
         }
         System.out.println("Orders:");
         do {
@@ -44,14 +47,15 @@ public class d5p1 {
                 int x = Integer.parseInt(nextLineS[1]);
                 int y = Integer.parseInt(nextLineS[2])-1;
                 int z = Integer.parseInt(nextLineS[3])-1;
-                for (int i = 0; i < x; i++) {
-                    if (!stacks[y].isEmpty()) {
-                        Object toBeMoved = stacks[y].getFirst();
-                        stacks[z].addFirst(toBeMoved);
-                        stacks[y].removeFirst();
-                    }
+                if (x > stacks[y].size()) {
+                    x = stacks[y].size();
                 }
-
+                while (x > 0) {
+                    Character toBeMoved = (Character) stacks[y].get(x-1);
+                    stacks[y].remove(x-1);
+                    stacks[z].addFirst(toBeMoved);
+                    x--;
+                }
             } else {
                 break;
             }
@@ -64,6 +68,5 @@ public class d5p1 {
                 System.out.print(" ");
             }
         }
-        System.out.println();
     }
 }
