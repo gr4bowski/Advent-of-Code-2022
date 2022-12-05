@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class day5part2 {
+public class day5part1 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String nextLine;
@@ -47,15 +47,14 @@ public class day5part2 {
                 int x = Integer.parseInt(nextLineS[1]);
                 int y = Integer.parseInt(nextLineS[2])-1;
                 int z = Integer.parseInt(nextLineS[3])-1;
-                if (x > stacks[y].size()) {
-                    x = stacks[y].size();
+                for (int i = 0; i < x; i++) {
+                    if (!stacks[y].isEmpty()) {
+                        Object toBeMoved = stacks[y].getFirst();
+                        stacks[z].addFirst(toBeMoved);
+                        stacks[y].removeFirst();
+                    }
                 }
-                while (x > 0) {
-                    Character toBeMoved = (Character) stacks[y].get(x-1);
-                    stacks[y].remove(x-1);
-                    stacks[z].addFirst(toBeMoved);
-                    x--;
-                }
+
             } else {
                 break;
             }
@@ -68,5 +67,6 @@ public class day5part2 {
                 System.out.print(" ");
             }
         }
+        System.out.println();
     }
 }
