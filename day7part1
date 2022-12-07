@@ -1,25 +1,48 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class day7part1 {
-    public static void main(String[] args) {
+    public void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         ArrayList<Integer> files;
-        ArrayList<Integer> filesTest;
         ArrayList<Directory> directories;
-        ArrayList<Directory> directoriesTest;
-        files = new ArrayList<>();
-        files.add(1111);
-        files.add(1111);
-        files.add(1111);
-        filesTest = new ArrayList<>();
-        filesTest.add(1111);
-        directoriesTest = new ArrayList<>();
-        Directory test = new Directory(filesTest,directoriesTest);
-        directories = new ArrayList<>();
-        directories.add(test);
-        Directory dir = new Directory(files, directories);
-        System.out.println(dir.calculateMySize(dir));
+//        files = new ArrayList<>();
+//        directories = new ArrayList<>();
+//        Directory dir = new Directory(files, directories);
+//
+//        int structureSize = dir.dirInside.size();
+//        Structure s = new Structure(structureSize);
+        int level;
+        String nextLine = scanner.nextLine();
+        while (!nextLine.isEmpty()) {
+            String[] command = nextLine.split(" ");
+            if (command[0].equals("$")) {
+                if (command[1].equals("cd")) {
+
+                }
+            }
+            nextLine = scanner.nextLine();
+        }
     }
 
+    class Structure {
+        ArrayList<ArrayList<Directory>> struct;
+        int nodes;
+
+        Structure(int nodes) {
+            nodes = this.nodes;
+            struct = new ArrayList<ArrayList<Directory>>();
+        }
+        void addPath(int v, Directory u) {
+            struct.get(v).add(u);
+        }
+        void printStructure() {
+            for (int i = 0; i < nodes; i++) {
+                System.out.println("Path"+i);
+                for (Directory dir : struct.get(i))System.out.println(" -> " + dir);
+            }
+        }
+    }
     public static class Directory {
         ArrayList<Integer> filesInside;
         ArrayList<Directory> dirInside;
