@@ -1,0 +1,48 @@
+import java.util.ArrayList;
+
+public class day7part1 {
+    public static void main(String[] args) {
+        ArrayList<Integer> files;
+        ArrayList<Integer> filesTest;
+        ArrayList<Directory> directories;
+        ArrayList<Directory> directoriesTest;
+        files = new ArrayList<>();
+        files.add(1111);
+        files.add(1111);
+        files.add(1111);
+        filesTest = new ArrayList<>();
+        filesTest.add(1111);
+        directoriesTest = new ArrayList<>();
+        Directory test = new Directory(filesTest,directoriesTest);
+        directories = new ArrayList<>();
+        directories.add(test);
+        Directory dir = new Directory(files, directories);
+        System.out.println(dir.calculateMySize(dir));
+    }
+
+    public static class Directory {
+        ArrayList<Integer> filesInside;
+        ArrayList<Directory> dirInside;
+
+        Directory(ArrayList<Integer> filesInside, ArrayList<Directory> dirInside) {
+            this.filesInside = filesInside;
+            this.dirInside = dirInside;
+            }
+        public int calculateMySize(Directory dir) {
+            int sum = 0;
+            if (!dir.filesInside.isEmpty()) {
+                for (int i = 0; i < dir.filesInside.size(); i++) {
+                    sum += dir.filesInside.get(i);
+                }
+            }
+            if (!dir.dirInside.isEmpty()) {
+                for (int j = 0; j < dir.dirInside.size(); j++) {
+                    Directory toCalculate = new Directory(dir.dirInside.get(j).filesInside, dir.dirInside.get(j).dirInside);
+                    sum += calculateMySize(toCalculate);
+                }
+            }
+            return sum;
+        }
+
+    }
+}
