@@ -1,38 +1,44 @@
 import java.util.*;
 
-public class day7part1 {
-    public static class Directory {
-        List<Integer> filesInside;
-        List<Directory> dirInside;
-        Integer size;
-        Directory parent;
-        String name;
-        Directory(List<Integer> filesInside, List<Directory> dirInside) {
-            this.filesInside = filesInside;
-            this.dirInside = dirInside;
-            size = 0;
-            name = "";
-        }
-        Directory() {
-            this.filesInside = new ArrayList<>();
-            this.dirInside = new ArrayList<>();
-            size = 0;
-            name = "";
-        }
+public class Directory {
 
-        private Integer calculateMySize(Directory dir) {
-            for(Integer it : dir.filesInside)
-                dir.size+=it;
-            for(Directory it : dir.dirInside)
-                this.size += it.calculateMySize(it);
-            return dir.size;
-        }
+    List<Integer> filesInside;
+    List<Directory> dirInside;
+    Integer size;
+    Directory parent;
+    String name;
+
+//    Directory(List<Integer> filesInside, List<Directory> dirInside) {
+//        this.filesInside = filesInside;
+//        this.dirInside = dirInside;
+//        size = 0;
+//        name = "";
+//    }
+
+    Directory(String name, Directory parent) {
+        this.parent = parent;
+        this.filesInside = new ArrayList<>();
+        this.dirInside = new ArrayList<>();
+        this.size = 0;
+        this.name = name;
     }
+
+    public Integer calculateMySize() {
+        for(Integer it : this.filesInside)
+            this.size+=it;
+        for(Directory it : this.dirInside)
+            this.size += it.calculateMySize();
+        return this.size;
+    }
+}
+
+
+public class day7part1v2 {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         List<Directory> path = new ArrayList<>();
-        Directory root = new Directory();
+        Directory root = new Directory("root", null);
         root.name = "root";
         path.add(root);
         Directory currentDirectory;
@@ -45,41 +51,23 @@ public class day7part1 {
                 if (command[1].equals("cd")) {
                     if (command[2].equals("..")) {
                         currentDirectory = currentDirectory.parent;
-                    } else {
+                    } else { //cd dir.name
                         String name = command[2];
-                        if (currentDirectory.dirInside.isEmpty()) {
-                            currentDirectory.dirInside.add(new Directory());
-                            currentDirectory.dirInside.get(0).name = name;
-                            currentDirectory.dirInside.get(0).parent = currentDirectory;
-                            currentDirectory = currentDirectory.dirInside.get(0);
-                        } else {
-                            for (int j = 0; j < currentDirectory.dirInside.size(); j++) {
-                                if (currentDirectory.dirInside.get(j).name.equals(name)) {
-                                    currentDirectory = currentDirectory.dirInside.get(j);
-                                    break;
-                                } else {
-                                    currentDirectory.dirInside.add(new Directory());
-                                    for (int k = 0; k < currentDirectory.dirInside.size(); k++) {
-                                        if (currentDirectory.dirInside.get(j).name.isEmpty()) {
-                                            currentDirectory.dirInside.get(j).name = name;
-                                            currentDirectory.dirInside.get(j).parent = currentDirectory;
-                                            currentDirectory = currentDirectory.dirInside.get(j);
-                                            break;
-                                        }
-                                    }
-                                }
+                        for (Directory it: currentDirectory.dirInside) {
+                            if (it.name.equals(name)) {
+                                currentDirectory = it;
                             }
                         }
-                        if (!path.contains(currentDirectory)) {
-                            path.add(currentDirectory);
-                            continue;
-                            } else if (command[1].equals("ls")){
-                                continue;
-                            } else if (command[0].equals("dir")) {
-                                continue;
-                            }
-                         }
+                    }
+                }else if (command[1].equals("ls")){
+                    continue;
                 }
+            } else if (command[0].equals("dir")) {
+                currentDirectory.dirInside.add(new Directory(command[1], currentDirectory));
+            }
+            if (!path.contains(currentDirectory)) {
+                path.add(currentDirectory);
+                continue;
             }
             if (!nextLine.isEmpty()) {
                 if (command[0].charAt(0) != '$' && command[0].charAt(0) != 'd') {
@@ -97,7 +85,7 @@ public class day7part1 {
         }
         int sum = 0;
         for (Directory it : path) {
-            it.size = it.calculateMySize(it);
+            it.size = it.calculateMySize();
             if (it.size < 100000) {
                 sum += it.size;
             }
