@@ -1,71 +1,108 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 public class day7part1 {
-    public void main(String[] args) {
+    public static class Directory {
+        List<Integer> filesInside;
+        List<Directory> dirInside;
+        Integer size;
+        Directory parent;
+        String name;
+        Directory(List<Integer> filesInside, List<Directory> dirInside) {
+            this.filesInside = filesInside;
+            this.dirInside = dirInside;
+            size = 0;
+            name = "";
+        }
+        Directory() {
+            this.filesInside = new ArrayList<>();
+            this.dirInside = new ArrayList<>();
+            size = 0;
+            name = "";
+        }
+
+        private Integer calculateMySize(Directory dir) {
+            for(Integer it : dir.filesInside)
+                dir.size+=it;
+            for(Directory it : dir.dirInside)
+                this.size += it.calculateMySize(it);
+            return dir.size;
+        }
+    }
+
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Integer> files;
-        ArrayList<Directory> directories;
-//        files = new ArrayList<>();
-//        directories = new ArrayList<>();
-//        Directory dir = new Directory(files, directories);
-//
-//        int structureSize = dir.dirInside.size();
-//        Structure s = new Structure(structureSize);
-        int level;
+        List<Directory> path = new ArrayList<>();
+        Directory root = new Directory();
+        root.name = "root";
+        path.add(root);
+        Directory currentDirectory;
+        currentDirectory = root;
         String nextLine = scanner.nextLine();
         while (!nextLine.isEmpty()) {
+            nextLine = scanner.nextLine();
             String[] command = nextLine.split(" ");
             if (command[0].equals("$")) {
                 if (command[1].equals("cd")) {
-
+                    if (command[2].equals("..")) {
+                        currentDirectory = currentDirectory.parent;
+                    } else {
+                        String name = command[2];
+                        if (currentDirectory.dirInside.isEmpty()) {
+                            currentDirectory.dirInside.add(new Directory());
+                            currentDirectory.dirInside.get(0).name = name;
+                            currentDirectory.dirInside.get(0).parent = currentDirectory;
+                            currentDirectory = currentDirectory.dirInside.get(0);
+                        } else {
+                            for (int j = 0; j < currentDirectory.dirInside.size(); j++) {
+                                if (currentDirectory.dirInside.get(j).name.equals(name)) {
+                                    currentDirectory = currentDirectory.dirInside.get(j);
+                                    break;
+                                } else {
+                                    currentDirectory.dirInside.add(new Directory());
+                                    for (int k = 0; k < currentDirectory.dirInside.size(); k++) {
+                                        if (currentDirectory.dirInside.get(j).name.isEmpty()) {
+                                            currentDirectory.dirInside.get(j).name = name;
+                                            currentDirectory.dirInside.get(j).parent = currentDirectory;
+                                            currentDirectory = currentDirectory.dirInside.get(j);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (!path.contains(currentDirectory)) {
+                            path.add(currentDirectory);
+                            continue;
+                            } else if (command[1].equals("ls")){
+                                continue;
+                            } else if (command[0].equals("dir")) {
+                                continue;
+                            }
+                         }
                 }
             }
-            nextLine = scanner.nextLine();
-        }
-    }
-
-    class Structure {
-        ArrayList<ArrayList<Directory>> struct;
-        int nodes;
-
-        Structure(int nodes) {
-            nodes = this.nodes;
-            struct = new ArrayList<ArrayList<Directory>>();
-        }
-        void addPath(int v, Directory u) {
-            struct.get(v).add(u);
-        }
-        void printStructure() {
-            for (int i = 0; i < nodes; i++) {
-                System.out.println("Path"+i);
-                for (Directory dir : struct.get(i))System.out.println(" -> " + dir);
-            }
-        }
-    }
-    public static class Directory {
-        ArrayList<Integer> filesInside;
-        ArrayList<Directory> dirInside;
-
-        Directory(ArrayList<Integer> filesInside, ArrayList<Directory> dirInside) {
-            this.filesInside = filesInside;
-            this.dirInside = dirInside;
-            }
-        public int calculateMySize(Directory dir) {
-            int sum = 0;
-            if (!dir.filesInside.isEmpty()) {
-                for (int i = 0; i < dir.filesInside.size(); i++) {
-                    sum += dir.filesInside.get(i);
+            if (!nextLine.isEmpty()) {
+                if (command[0].charAt(0) != '$' && command[0].charAt(0) != 'd') {
+                    Integer newFile = Integer.parseInt(command[0]);
+                    if (currentDirectory.filesInside.isEmpty()) {
+                        currentDirectory.filesInside.add(newFile);
+                    } else if (currentDirectory.filesInside.contains(newFile)) {
+                        continue;
+                    } else {
+                        currentDirectory.filesInside.add(newFile);
+                        continue;
+                    }
                 }
             }
-            if (!dir.dirInside.isEmpty()) {
-                for (int j = 0; j < dir.dirInside.size(); j++) {
-                    Directory toCalculate = new Directory(dir.dirInside.get(j).filesInside, dir.dirInside.get(j).dirInside);
-                    sum += calculateMySize(toCalculate);
-                }
-            }
-            return sum;
         }
+        int sum = 0;
+        for (Directory it : path) {
+            it.size = it.calculateMySize(it);
+            if (it.size < 100000) {
+                sum += it.size;
+            }
+        }
+        System.out.println(sum);
 
     }
 }
