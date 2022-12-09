@@ -48,7 +48,6 @@ public class Directory {
 }
 
 public class day7part1v2 {
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Directory root = new Directory("/", null);
