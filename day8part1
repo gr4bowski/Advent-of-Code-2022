@@ -4,67 +4,65 @@ public class Tree {
     int height;
     boolean isVisible;
 
-    Tree (int height) {
+    Tree(int height) {
         this.height = height;
     }
-    public static Integer howManyVisible(List<List<Tree>> forest) {
+    public static boolean isVisible(List<List<Tree>> forest, int i, int j) {
+        Tree currentTree = forest.get(i).get(j);
         int sides = 0;
-        for (int i = 0; i < forest.size(); i++) {
-            for (int j = 0; j < forest.get(i).size(); j++) {
-                Tree currentTree = forest.get(i).get(j);
-                if (i == 0 || i == forest.size() - 1) {
-                    currentTree.isVisible = true;
-                } else if (j == 0 || j == forest.get(i).size() - 1) {
-                    currentTree.isVisible = true;
+        if (i == 0 || i == forest.size()-1) {
+            return true;
+        } else if (j == 0 || j == forest.get(i).size()-1) {
+            return true;
+        } else {
+            int tempI = i, tempJ = j;
+            while (i > 0) {
+                if (currentTree.height < forest.get(i).get(j).height) {
+                    sides++;
+                    break;
                 } else {
-                    for (int m = 0; m < forest.size(); m++) {
-                        if (m < i) {
-                            if (currentTree.height < forest.get(i).get(m).height) {
-                                //currentTree.side++;
-                                sides++;
-                                m = i;
-                            }
-                        } else if (m > i) {
-                            if (currentTree.height < forest.get(i).get(m).height) {
-                                //currentTree.side++;
-                                sides++;
-                                break;
-                            }
-                        }
-                    }
-                    for (int m = 0; m < forest.size(); m++) {
-                        if (m < j) {
-                            if (currentTree.height < forest.get(m).get(j).height) {
-                                //currentTree.side++;
-                                sides++;
-                                m = j;
-                            }
-                        } else if (m > j) {
-                            if (currentTree.height < forest.get(m).get(j).height) {
-                                //currentTree.side++;
-                                sides++;
-                                break;
-                            }
-                        }
-                    }
-                    if (sides == 4)
-                        currentTree.isVisible = false;
+                    i--;
+                }
+            }
+            i = tempI;
+            while (i < forest.size()) {
+                if (currentTree.height < forest.get(i).get(j).height) {
+                    sides++;
+                    break;
+                } else {
+                    i++;
+                }
+            }
+            i = tempI;
+            while (j > 0) {
+                if (currentTree.height < forest.get(i).get(j).height) {
+                    sides++;
+                    break;
+                } else {
+                    j--;
+                }
+            }
+            j = tempJ;
+            while (j < forest.get(i).size()) {
+                if (currentTree.height < forest.get(i).get(j).height) {
+                    sides++;
+                    break;
+                } else {
+                    j++;
                 }
             }
         }
-        int howManyVisible = 0;
-        for (List<Tree> that : forest) {
-            for (Tree it : that) {
-                if (it.isVisible)
-                    howManyVisible++;
-            }
-        }
-        return howManyVisible;
+        if (sides == 4) {
+            return false;
+        } else
+            return true;
     }
 }
 
+
 public class day8part1 {
     public static void main(String[] args) {
+        int count = 0;
         Scanner scanner = new Scanner(System.in);
         List<List<Tree>> forest = new ArrayList<>();
         List<Tree> row;
@@ -78,6 +76,12 @@ public class day8part1 {
             }
             forest.add(row);
         }
-        System.out.println(Tree.howManyVisible(forest));
+        for (int i = 0; i < forest.size(); i++) {
+            for (int j = 0; j < forest.get(i).size(); j++) {
+                if (Tree.isVisible(forest, i, j))
+                    count++;
+            }
+        }
+        System.out.println(count);
     }
 }
