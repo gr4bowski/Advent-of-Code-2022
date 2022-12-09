@@ -2,8 +2,6 @@ import java.util.*;
 
 public class Tree {
     int height;
-    boolean isVisible;
-
     Tree(int height) {
         this.height = height;
     }
@@ -17,38 +15,34 @@ public class Tree {
         } else {
             int tempI = i, tempJ = j;
             while (i > 0) {
-                if (currentTree.height < forest.get(i).get(j).height) {
+                i--;
+                if (currentTree.height <= forest.get(i).get(j).height) {
                     sides++;
                     break;
-                } else {
-                    i--;
                 }
             }
             i = tempI;
-            while (i < forest.size()) {
-                if (currentTree.height < forest.get(i).get(j).height) {
+            while (i < forest.size()-1) {
+                i++;
+                if (currentTree.height <= forest.get(i).get(j).height) {
                     sides++;
                     break;
-                } else {
-                    i++;
                 }
             }
             i = tempI;
             while (j > 0) {
-                if (currentTree.height < forest.get(i).get(j).height) {
+                j--;
+                if (currentTree.height <= forest.get(i).get(j).height) {
                     sides++;
                     break;
-                } else {
-                    j--;
                 }
             }
             j = tempJ;
-            while (j < forest.get(i).size()) {
-                if (currentTree.height < forest.get(i).get(j).height) {
+            while (j < forest.get(i).size()-1) {
+                j++;
+                if (currentTree.height <= forest.get(i).get(j).height) {
                     sides++;
                     break;
-                } else {
-                    j++;
                 }
             }
         }
@@ -58,7 +52,6 @@ public class Tree {
             return true;
     }
 }
-
 
 public class day8part1 {
     public static void main(String[] args) {
