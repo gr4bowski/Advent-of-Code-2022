@@ -26,14 +26,27 @@ public class Directory {
     }
     public Integer sumOfDirInside() {
         int sum = 0;
-        if (this.calculateMySize() <= 100000)
+        if (this.size <= 100000)
             sum += this.size;
         for (Directory it: this.dirInside) {
             sum += it.sumOfDirInside();
         }
         return sum;
     }
+    public static Set<Directory> findBigEnough(int value, Directory dir) {
+        Set<Directory> result = new HashSet<>();
+        if (dir.size > value) {
+            result.add(dir);
+        }
+        if (!dir.dirInside.isEmpty()){
+            for (Directory it : dir.dirInside) {
+                result.addAll(findBigEnough(value, it));
+            }
+        }
+        return result;
+    }
 }
+
 public class day7part1v2 {
 
     public static void main(String[] args) {
@@ -65,6 +78,14 @@ public class day7part1v2 {
             }
             nextLine = scanner.nextLine();
         }
+        root.calculateMySize();
         System.out.println(root.sumOfDirInside());
+        int toFree = 30000000 - (70000000 - root.size);
+        int smallest = root.size;
+        for (Directory it : Directory.findBigEnough(toFree, root)) {
+            if (it.size < smallest)
+                smallest = it.size;
+        }
+        System.out.println(smallest);
     }
 }
