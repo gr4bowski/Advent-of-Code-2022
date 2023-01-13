@@ -121,7 +121,7 @@ public class day14part1 {
                     New = false;
                     level = 0;
                     units++;
-                    for (int i = 0; i < map.length; i++) {
+                    for (int i = 0; i < map.length; i++) {  //additional graphical representation for testing
                         for (int j = 0; j < map[i].length; j++) {
                             if (i == 0 && j == 0)
                                 System.out.print('R');
@@ -140,40 +140,19 @@ public class day14part1 {
                     }
                     System.out.println();
                 }
-                //System.out.println(level + " " + FL);
                 if (!map[level + 1][FL]) {             // go lower when false
                     level++;
                 } else {
-                    if (!map[level][FL + 1]) {                     // if to the left is free
-                        if (!map[level + 1][FL + 1]) {              // if to the left and down is free
-                            FL++;                               // change falling position to left and continue falling
-                        } else {                                // else if left side isn't viable for falling
-                            if (!map[level][FL - 1]) {            // if to the right is free
-                                if (!map[level + 1][FL - 1]) {  // if to the right and down is free
-                                    FL--;
-                                } else {
-                                    map[level][FL] = true;
-                                    New = true;
-                                }
-                            } else {
-                                map[level][FL] = true;
-                                New = true;
-                            }
-                        }
-                    } else if (!map[level + 1][FL + 1]) {       // if to the left is not free -> check left down
+                    if (!map[level + 1][FL + 1]) {          // check if down and left is free
                         FL++;
-                    } else if (!map[level][FL - 1]) {                // if to the right is true
-                        if (!map[level + 1][FL - 1]) {            // if to the right and down is free
-                            FL--;                           // change falling position to right and continue falling
-                        } else {
-                            map[level][FL] = true;
-                            New = true;
-                        }
-                    } else if (!map[level + 1][FL - 1]) {       // if to the right is not free -> check right down
+                        level++;
+                    } else if (!map[level + 1][FL - 1]) {   // check if down and right is free
                         FL--;
-                    } else {
+                        level++;
+                    }
+                    else {                                  // if nowhere to go -> come to rest
                         map[level][FL] = true;
-                        New = true;
+                        New = true;                         // new grain of sand can start
                     }
                 }
             }
