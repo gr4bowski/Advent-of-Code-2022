@@ -5,32 +5,37 @@ public class day14part1 {
 
         // declarations
         Scanner sc = new Scanner(System.in);
+        Set<Integer> columns = new HashSet<Integer>();
+        Set<Integer> levels = new HashSet<>();
         Integer[] start = new Integer[2];
         Integer[] end = new Integer[2];
         boolean test = false;
+        boolean graph = true;
         final int D;
         final int V;
         final int H;
-        if (test) {
-            D = 503; //494
-            V = Math.abs(-10);
-            H = 10;
-        } else {
-            D = 513;
-            V = Math.abs(-55);
-            H = 170;
-        }
+        final int dif;
         final int S = 500;
-        boolean[][] map = new boolean[H][V];
         int SP, FP, SSP, lin, FL, units;
+        char direct;
         units = 0;
         // SP & FP - lines starting and finish positions
         // SSP - sand starting position
         // lin - constant array value
         // units of sand
         // FL - falling line
-        char direct;
-        SSP = D - S;
+        if (test) {
+            D = 503; //494
+            H = 10;
+            V = 10;
+            dif = 494;
+        } else {
+            D = 513; //459
+            H = 170;
+            V = 59; //55
+            dif = 459;
+        }
+        int[][] map = new int[H][V];
 
 
         // reading / parsing input
@@ -44,15 +49,18 @@ public class day14part1 {
                 String[] from = line[i].split(",");
                 for (int s = 0; s < 2; s++)
                     if (s == 0)
-                        start[s] = Math.abs(Integer.parseInt(from[s]) - D);
+                        start[s] = Integer.parseInt(from[s]) - dif;
                     else
                         start[s] = Integer.parseInt(from[s]);
                 String[] to = line[i + 1].split(",");
                 for (int s = 0; s < 2; s++)
                     if (s == 0)
-                        end[s] = Math.abs(Integer.parseInt(to[s]) - D);
+                        end[s] = Integer.parseInt(to[s]) - dif;
                     else
                         end[s] = Integer.parseInt(to[s]);
+
+                levels.add(start[0]);           // marking lowest/highest values
+                columns.add(start[1]);          // to determine sand fall starting position
 
 
                 // marking rocks
@@ -81,31 +89,35 @@ public class day14part1 {
                 }
                 if (direct == 'V')              // vertical
                     for (; SP <= FP; SP++)
-                        map[lin][SP] = true;
+                        map[lin][SP] = 1;
                 else                            // horizontal
                     for (; SP <= FP; SP++)
-                        map[SP][lin] = true;
+                        map[SP][lin] = 1;
             }
         }
 
+
         // graphical representation of rocks
-//        for (int i = 0; i < map.length; i++) {
-//            for (int j = 0; j < map[i].length; j++) {
-//                if (i == 0 && j == 0)
-//                    System.out.print('R');
-//                else if (i == 0 && j == map[i].length - 1)
-//                    System.out.print('L');
-//                else if (i == 0 && j == SSP)
-//                    System.out.print('+');
-//                else {
-//                    if (map[i][j])
-//                        System.out.print('#');
-//                    else
-//                        System.out.print('.');
-//                }
-//            }
-//            System.out.println();
-//        }
+        SSP = Collections.max(levels) + (S - D);
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[i].length; j++) {
+                if (i == 0 && j == 0)
+                    System.out.print('L');
+                else if (i == 0 && j == map[i].length - 1)
+                    System.out.print('R');
+                else if (i == 0 && j == SSP)
+                    System.out.print('+');
+                else {
+                    if (map[i][j] == 1)
+                        System.out.print('#');
+                    else if (map[i][j] == 2)
+                        System.out.print('o');
+                    else
+                        System.out.print('.');
+                }
+            }
+            System.out.println();
+        }
 
 
         // sand falling implementation
@@ -114,44 +126,49 @@ public class day14part1 {
         int level = 0;
         try {
             while (true) {
-                if (level == H)
+                if (map[0][SSP] == 2) {
+                    System.out.println(units);
                     break;
+                }
                 if (New) {
                     FL = SSP;                       // reset to baseline for New unit
                     New = false;
                     level = 0;
                     units++;
-                    for (int i = 0; i < map.length; i++) {  //additional graphical representation for testing
-                        for (int j = 0; j < map[i].length; j++) {
-                            if (i == 0 && j == 0)
-                                System.out.print('R');
-                            else if (i == 0 && j == map[i].length - 1)
-                                System.out.print('L');
-                            else if (i == 0 && j == SSP)
-                                System.out.print('+');
-                            else {
-                                if (map[i][j])
-                                    System.out.print('#');
-                                else
-                                    System.out.print('.');
+                    if (graph) {
+                        for (int i = 0; i < map.length; i++) {      //additional graphical representation for testing
+                            for (int j = 0; j < map[i].length; j++) {
+                                if (i == 0 && j == 0)
+                                    System.out.print('L');
+                                else if (i == 0 && j == map[i].length - 1)
+                                    System.out.print('R');
+                                else if (i == 0 && j == SSP)
+                                    System.out.print('+');
+                                else {
+                                    if (map[i][j] == 1)
+                                        System.out.print('#');
+                                    else if (map[i][j] == 2)
+                                        System.out.print('o');
+                                    else
+                                        System.out.print('.');
+                                }
                             }
+                            System.out.println();
                         }
                         System.out.println();
                     }
-                    System.out.println();
                 }
-                if (!map[level + 1][FL]) {             // go lower when false
+                if (map[level + 1][FL] == 0) {             // go lower when false
                     level++;
                 } else {
-                    if (!map[level + 1][FL + 1]) {          // check if down and left is free
-                        FL++;
-                        level++;
-                    } else if (!map[level + 1][FL - 1]) {   // check if down and right is free
+                    if (map[level + 1][FL - 1] == 0) {          // check if down and left is free
                         FL--;
                         level++;
-                    }
-                    else {                                  // if nowhere to go -> come to rest
-                        map[level][FL] = true;
+                    } else if (map[level + 1][FL + 1] == 0) {   // check if down and right is free
+                        FL++;
+                        level++;
+                    } else {                                  // if nowhere to go -> come to rest
+                        map[level][FL] = 2;
                         New = true;                         // new grain of sand can start
                     }
                 }
